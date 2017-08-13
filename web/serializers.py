@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'password', 'is_staff', 'token')
 
     def create(self, validated_data):
-        user = User.objects.create(**validated_data)
+        user = User.objects.create_user(**validated_data)
         user.token = Token.objects.create(user=user)
         return user
 
