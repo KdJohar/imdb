@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Permission
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
@@ -15,6 +16,9 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         user.token = Token.objects.create(user=user)
+        permissions = Permission.objects.filter(content_type__model__in=['genre', 'movie', 'director'])
+        for perm in permissions:
+            user.user_permissions.add(perm)
         return user
 
 
