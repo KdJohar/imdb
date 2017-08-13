@@ -1,0 +1,8 @@
+
+*.iml
+
+*.xml
+
+*.pyc
+
+imdb/local_settings.py
