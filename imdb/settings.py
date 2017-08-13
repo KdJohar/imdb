@@ -31,9 +31,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'web',
+    'rest_framework',
+    'debug_toolbar',
+    'rest_framework.authtoken',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -41,6 +46,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'imdb.urls'
@@ -62,7 +68,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'imdb.wsgi.application'
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -100,6 +105,24 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',
+                                'rest_framework.filters.SearchFilter',
+                                'rest_framework.filters.OrderingFilter'
+
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'web.permissions.IsAdminOrReadOnly',
+    )
+}
+
+INTERNAL_IPS = '127.0.0.1'
 try:
     from local_settings import *
 except ImportError:
