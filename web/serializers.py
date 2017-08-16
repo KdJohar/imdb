@@ -1,9 +1,46 @@
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
 from .models import Movie, Director, Genre
+
+
+class AuthTokenSerializer(serializers.Serializer):
+    username = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
+    token = serializers.CharField(max_length=100, read_only=True)
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+
+            if user:
+                # From Django 1.10 onwards the `authenticate` call simply
+                # returns `None` for is_active=False users.
+                # (Assuming the default `ModelBackend` authentication backend.)
+                if not user.is_active:
+                    msg = _('User account is disabled.')
+                    raise serializers.ValidationError(msg, code='authorization')
+            else:
+                msg = _('Unable to log in with provided credentials.')
+                raise serializers.ValidationError(msg, code='authorization')
+        else:
+            msg = _('Must include "username" and "password".')
+            raise serializers.ValidationError(msg, code='authorization')
+        attrs['user'] = user
+        return attrs
+
+    def create(self, validated_data):
+        user = validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        validated_data['token'] = token
+        return validated_data
 
 
 class UserSerializer(serializers.ModelSerializer):

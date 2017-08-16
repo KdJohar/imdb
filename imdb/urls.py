@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import url, include
 from django.contrib import admin
-from rest_framework.authtoken import views as rest_framework_views
 from rest_framework.routers import DefaultRouter
 
 from web import viewsets
@@ -26,13 +25,13 @@ router = DefaultRouter()
 router.register(r'movies', viewsets.MovieViewset, 'Movie')
 router.register(r'genre', viewsets.GenreViewset, 'Genres')
 router.register(r'director', viewsets.DirectorViewset, 'Directors')
-router.register(r'auth/register', viewsets.UserViewset, 'User')
+router.register(r'auth/register', viewsets.UserViewset, 'User Registration')
+router.register(r'auth/login', viewsets.UserLoginViewset, 'User Login')
 
 urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
     url(r'^admin/', admin.site.urls),
-    url(r'^api/v1/auth/login/$', rest_framework_views.obtain_auth_token, name='get_auth_token'),
-    # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^login/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
 if settings.DEBUG:

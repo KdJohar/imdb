@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from .models import Movie, Director, Genre
-from .serializers import MovieSerializer, DirectorSerializer, GenreSerializer, UserSerializer
+from .serializers import MovieSerializer, DirectorSerializer, GenreSerializer, UserSerializer, AuthTokenSerializer
 
 
 class CustomRangeFilter(django_filters.FilterSet):
@@ -78,5 +78,12 @@ class GenreViewset(DirectorViewset):
 class UserViewset(mixins.CreateModelMixin, GenericViewSet):
     permission_classes = (AllowAny,)
     serializer_class = UserSerializer
+    queryset = User.objects.all()
+    search_fields = ()
+
+
+class UserLoginViewset(mixins.CreateModelMixin, GenericViewSet):
+    permission_classes = (AllowAny,)
+    serializer_class = AuthTokenSerializer
     queryset = User.objects.all()
     search_fields = ()
